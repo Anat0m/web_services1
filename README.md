@@ -35,8 +35,6 @@ run: docker-compose up
 >  create_date_time: Date;<br>
 >}<br>
 
-#### Order
-
 ## REST API Requests
 
 ### Get all orders
