@@ -23,13 +23,21 @@ export class Order {
   address_line: string;
   @Column()
   item: string;
-  @Column()
+  @Column('float')
   total_price: number;
-  @Column()
+  @Column('float')
   total_shipping: number
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: OrderCurrency,
+    default: OrderCurrency.EUR
+  })
   currency: OrderCurrency;
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: OrderState,
+    default: OrderState.NEW
+  })
   state: OrderState;
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   create_date_time: Date;

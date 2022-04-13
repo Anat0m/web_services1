@@ -30,6 +30,8 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const orders = __importStar(require("./routes/orders"));
 const data_source_1 = require("./data-source");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 data_source_1.AppDataSource.initialize()
     .then(() => console.log('Database Initialized'))
     .catch((error) => console.log(error));

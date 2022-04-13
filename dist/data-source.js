@@ -5,11 +5,11 @@ const typeorm_1 = require("typeorm");
 const order_entity_1 = require("./entities/order.entity");
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "postgres",
-    host: "localhost",
+    host: "database",
     port: 5432,
-    username: "test",
-    password: "test",
-    database: "test",
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
     synchronize: true,
     logging: true,
     entities: [order_entity_1.Order],
