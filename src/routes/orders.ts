@@ -7,11 +7,10 @@ export const register = ( app: express.Application ) => {
 
     const ordersRepo = AppDataSource.getRepository(Order)
 
-
     app.route('/orders')
     .get(async ( req: any, res ) => {
         const users = await ordersRepo.find()
-        res.send(users);
+        res.status(200).send(users);
     }).post(celebrate({
         [Segments.BODY]: Joi.object().keys({
             customer_name: Joi.string().required(),
@@ -23,8 +22,7 @@ export const register = ( app: express.Application ) => {
           }),
     }),async (req, res) => {
         const savedUser = await ordersRepo.save(req.body)
-        console.log(savedUser)
-        res.send(savedUser);
+        res.status(201).location(`/orders/${savedUser.id}`).send(savedUser);
     });
 
     app.route('/orders/:id')
@@ -34,7 +32,11 @@ export const register = ( app: express.Application ) => {
         }),
     }),async (req, res) => {
         const user = await ordersRepo.findOneBy({id: req.params.id})
-        res.send(user);
+        if (user === null) {
+            res.status(404).send({error: `Order with id ${req.params.id} not found`})
+        } else {
+            res.status(200).send(user);
+        }
     })
     .put(celebrate({
         [Segments.PARAMS]: Joi.object().keys({
@@ -51,17 +53,27 @@ export const register = ( app: express.Application ) => {
           }),
     }),async (req, res) => {
         const user = await ordersRepo.findOneBy({id: req.params.id})
-        const update = {...user, ...req.body}
-        const updatedUser = await ordersRepo.save(update)
-        res.send(updatedUser)
+        if (user === null) {
+            res.status(404).send({error: `Order with id ${req.params.id} not found`})
+        } else {
+            const update = {...user, ...req.body}
+            const updatedUser = await ordersRepo.save(update)
+            res.status(200).location(`/orders/${user.id}`).send(updatedUser)
+        }
     })
     .delete(celebrate({
         [Segments.PARAMS]: Joi.object().keys({
             id: Joi.string().guid({ version : 'uuidv4' }).required(),
         }),
     }),async (req, res) => {
-        const user = await ordersRepo.delete({id: req.params.id})
-        res.send(user)
+        const user = await ordersRepo.findOneBy({id: req.params.id})
+        console.log(user)
+        if (user === null) {
+            res.status(404).send({error: `Order with id ${req.params.id} not found`})
+        } else {
+            await ordersRepo.delete(user);
+            res.status(204).send()
+        }
     })
     app.use(errors())
 };
